@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { Job } from '../types';
-import { MapPin } from 'lucide-react';
-import { JobPopup } from './JobPopup';
+import React, { useEffect, useRef, useState } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
+import { Job } from "../types";
+import { JobPopup } from "./JobPopup";
+import { createRoot } from "react-dom/client";
 
 interface MapComponentProps {
   jobs: Job[];
@@ -10,109 +12,127 @@ interface MapComponentProps {
   onSaveJob: (jobId: string) => void;
 }
 
-export function MapComponent({ jobs, onJobSelect, savedJobs, onSaveJob }: MapComponentProps) {
-  const [selectedPin, setSelectedPin] = useState<Job | null>(null);
+mapboxgl.accessToken =
+  "pk.eyJ1Ijoiam9uYXNzY2htZWR0bWFubiIsImEiOiJjam54ZmM5N3gwNjAzM3dtZDNxYTVlMnd2In0.ytpI7V7w7cyT1Kq5rT9Z1A";
 
-  // Calculate map bounds
-  const centerLat = jobs.length > 0 
-    ? jobs.reduce((sum, job) => sum + job.location.lat, 0) / jobs.length 
-    : 37.7749;
-  const centerLng = jobs.length > 0 
-    ? jobs.reduce((sum, job) => sum + job.location.lng, 0) / jobs.length 
-    : -122.4194;
+export function MapComponent({
+  jobs,
+  onJobSelect,
+  savedJobs,
+  onSaveJob,
+}: MapComponentProps) {
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
+  const openPopupRef = useRef<mapboxgl.Popup | null>(null);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(
+    null
+  );
 
-  // Simple projection for demo purposes
-  const latToY = (lat: number) => {
-    const range = 20; // degrees
-    return ((centerLat - lat + range/2) / range) * 100;
-  };
+  // Step 1: Get user location
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => setUserLocation([pos.coords.longitude, pos.coords.latitude]),
+      () => setUserLocation([35.21, 31.77]), // fallback Palestine
+      { enableHighAccuracy: true }
+    );
+  }, []);
 
-  const lngToX = (lng: number) => {
-    const range = 30; // degrees
-    return ((lng - centerLng + range/2) / range) * 100;
-  };
+  // Step 2: Initialize map once
+  useEffect(() => {
+    if (!userLocation || mapRef.current) return;
+
+    const map = new mapboxgl.Map({
+      container: mapContainerRef.current!,
+      style: "mapbox://styles/mapbox/streets-v12",
+      center: userLocation,
+      zoom: 12,
+    });
+
+    mapRef.current = map;
+    map.addControl(new mapboxgl.NavigationControl());
+
+    new mapboxgl.Marker({ color: "red" })
+      .setLngLat(userLocation)
+      .setPopup(new mapboxgl.Popup().setText("You are here"))
+      .addTo(map);
+
+    return () => map.remove();
+  }, [userLocation]);
+
+  // Step 3: Add markers + popup
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    // Remove old markers and clear any open popup
+    markersRef.current.forEach((m) => m.remove());
+    markersRef.current = [];
+    if (openPopupRef.current) {
+      try {
+        openPopupRef.current.remove();
+      } catch (e) {
+        // ignore
+      }
+      openPopupRef.current = null;
+    }
+
+    jobs.forEach((job) => {
+      const el = document.createElement("div");
+      el.className =
+        "w-4 h-4 bg-blue-600 rounded-full border-2 border-white cursor-pointer hover:scale-125 transition";
+
+      // Popup container
+      const popupNode = document.createElement("div");
+      const root = createRoot(popupNode);
+      root.render(
+        <JobPopup
+          job={job}
+          onClose={() => {
+            const popup = marker.getPopup();
+            if (popup) {
+              popup.remove();
+              if (openPopupRef.current === popup) openPopupRef.current = null;
+            }
+          }}
+          onViewDetails={() => onJobSelect(job)} // navigate only when clicking button
+          isSaved={savedJobs.includes(job.id)}
+          onSave={() => onSaveJob(job.id)}
+        />
+      );
+
+      const popup = new mapboxgl.Popup({
+        offset: 15,
+        closeButton: false,
+        closeOnClick: false,
+      }).setDOMContent(popupNode);
+
+      const marker = new mapboxgl.Marker(el)
+        .setLngLat([job.location.lng, job.location.lat])
+        .setPopup(popup)
+        .addTo(mapRef.current!);
+
+      // Open popup on click — ensure only one popup is open at a time
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (openPopupRef.current && openPopupRef.current !== popup) {
+          openPopupRef.current.remove();
+        }
+        popup.addTo(mapRef.current!);
+        openPopupRef.current = popup;
+      });
+
+      markersRef.current.push(marker);
+    });
+  }, [jobs, savedJobs]);
 
   return (
-    <div className="relative w-full h-full bg-gray-100 dark:bg-gray-900 overflow-hidden">
-      {/* Map Background - simplified grid */}
-      <div className="absolute inset-0 opacity-20 dark:opacity-10">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="gray" strokeWidth="0.5"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-      </div>
-
-      {/* Streets overlay */}
-      <div className="absolute inset-0">
-        {/* Simulated streets */}
-        <div className="absolute top-1/4 left-0 right-0 h-px bg-gray-300 dark:bg-gray-700"></div>
-        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-gray-400 dark:bg-gray-600"></div>
-        <div className="absolute top-3/4 left-0 right-0 h-px bg-gray-300 dark:bg-gray-700"></div>
-        <div className="absolute left-1/4 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-700"></div>
-        <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-gray-400 dark:bg-gray-600"></div>
-        <div className="absolute left-3/4 top-0 bottom-0 w-px bg-gray-300 dark:bg-gray-700"></div>
-      </div>
-
-      {/* Job Pins */}
-      {jobs.map((job) => {
-        const x = lngToX(job.location.lng);
-        const y = latToY(job.location.lat);
-        const isSelected = selectedPin?.id === job.id;
-
-        return (
-          <button
-            key={job.id}
-            className={`absolute transform -translate-x-1/2 -translate-y-full transition-all ${
-              isSelected ? 'z-30' : 'z-10'
-            }`}
-            style={{
-              left: `${x}%`,
-              top: `${y}%`
-            }}
-            onClick={() => setSelectedPin(job)}
-          >
-            <div className={`relative ${isSelected ? 'scale-125' : 'hover:scale-110'} transition-transform`}>
-              <MapPin
-                className={`w-8 h-8 ${
-                  isSelected 
-                    ? 'text-blue-600 fill-blue-600' 
-                    : 'text-red-500 fill-red-500'
-                }`}
-              />
-              {savedJobs.includes(job.id) && (
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 border-2 border-white rounded-full"></div>
-              )}
-            </div>
-          </button>
-        );
-      })}
-
-      {/* Job Popup */}
-      {selectedPin && (
-        <div className="absolute z-40" style={{
-          left: `${lngToX(selectedPin.location.lng)}%`,
-          top: `${latToY(selectedPin.location.lat)}%`,
-          transform: 'translate(-50%, -100%)',
-          marginTop: '-12px'
-        }}>
-          <JobPopup
-            job={selectedPin}
-            onClose={() => setSelectedPin(null)}
-            onViewDetails={() => onJobSelect(selectedPin)}
-            isSaved={savedJobs.includes(selectedPin.id)}
-            onSave={() => onSaveJob(selectedPin.id)}
-          />
+    <div className="w-full h-[calc(100vh-73px)] relative rounded-lg overflow-hidden">
+      {!userLocation && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-gray-500">
+          Fetching your location...
         </div>
       )}
-
-      {/* Map Attribution */}
-      <div className="absolute bottom-4 right-4 bg-white dark:bg-gray-800 px-3 py-1.5 rounded shadow-lg text-gray-600 dark:text-gray-400">
-        Interactive Job Map
-      </div>
+      <div ref={mapContainerRef} className="w-full h-full" />
     </div>
   );
 }

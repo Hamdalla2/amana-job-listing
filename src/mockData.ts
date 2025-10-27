@@ -2,6 +2,68 @@ import { Job } from "./types";
 
 export const mockJobs: Job[] = [
   {
+    id: "555",
+    title: "UX Designer",
+    company: "CloudTech",
+    companyLogo: "https://picsum.photos/seed/94/100",
+    location: {
+      name: "Gaza, Palestine",
+      lat: 31.5,
+      lng: 34.4667,
+    },
+    salary: "$110,021 - $160,932",
+    type: "Full-time",
+    workingHours: "9:00 AM - 5:00 PM",
+    workingDays: "Monday - Friday",
+    description:
+      "We are seeking a UX Designer to join CloudTech. Collaborate with cross-functional teams to deliver scalable solutions.",
+    requirements: [
+      "Relevant professional experience",
+      "Strong communication and teamwork skills",
+      "Problem-solving mindset",
+      "Bachelor's degree in related field",
+    ],
+    benefits: [
+      "Health insurance",
+      "Flexible schedule",
+      "Remote work options",
+      "Professional development budget",
+    ],
+    postedDate: "3 days ago",
+    companyEmail: "jobs@cloudtech.com",
+  },
+  {
+    id: "585",
+    title: "UI Designer",
+    company: "CloudTech",
+    companyLogo: "https://picsum.photos/seed/94/100",
+    location: {
+      name: "Gaza, Palestine",
+      lat: 31.3,
+      lng: 34.25,
+    },
+    salary: "$50,000 - $160,000",
+    type: "Full-time",
+    workingHours: "9:00 AM - 5:00 PM",
+    workingDays: "Monday - Friday",
+    description:
+      "We are seeking a UX Designer to join CloudTech. Collaborate with cross-functional teams to deliver scalable solutions.",
+    requirements: [
+      "Relevant professional experience",
+      "Strong communication and teamwork skills",
+      "Problem-solving mindset",
+      "Bachelor's degree in related field",
+    ],
+    benefits: [
+      "Health insurance",
+      "Flexible schedule",
+      "Remote work options",
+      "Professional development budget",
+    ],
+    postedDate: "3 days ago",
+    companyEmail: "jobs@cloudtech.com",
+  },
+  {
     id: "1",
     title: "Data Scientist",
     company: "StartupXYZ",

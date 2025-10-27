@@ -30,6 +30,12 @@ const locations = [
   { name: "Denver, CO", lat: 39.7392, lng: -104.9903 },
   { name: "Boston, MA", lat: 42.3601, lng: -71.0589 },
   { name: "Portland, OR", lat: 45.5152, lng: -122.6784 },
+  // Added several locations in Palestine
+  { name: "Ramallah, Palestine", lat: 31.9074, lng: 35.2048 },
+  { name: "Gaza, Palestine", lat: 31.5, lng: 34.4667 },
+  { name: "Nablus, Palestine", lat: 32.2211, lng: 35.2544 },
+  { name: "Hebron, Palestine", lat: 31.5326, lng: 35.0998 },
+  { name: "Jenin, Palestine", lat: 32.4599, lng: 35.295 },
 ];
 
 function random(arr) {
