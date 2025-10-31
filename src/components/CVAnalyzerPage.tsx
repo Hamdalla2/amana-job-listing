@@ -1,9 +1,48 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Upload, BrainCircuit, FileText, AlertCircle, Loader2 } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import { Upload, BrainCircuit, AlertCircle, Loader2 } from 'lucide-react';
+import { Button } from './ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+
+// Helper component to render markdown-like text from the AI
+const AnalysisResultDisplay = ({ result }: { result: string }) => {
+  const lines = result.split('\n').filter(line => line.trim() !== '');
+
+  const elements = lines.map((line, index) => {
+    if (line.startsWith('### ')) {
+      return <h3 key={index} className="text-xl font-semibold mt-6 mb-2 text-blue-600 dark:text-blue-300">{line.substring(4)}</h3>;
+    }
+    if (line.startsWith('## ')) {
+      return <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-primary dark:text-blue-200">{line.substring(3)}</h2>;
+    }
+    if (line.startsWith('# ')) {
+      return <h1 key={index} className="text-3xl font-bold mt-8 mb-4 text-primary dark:text-blue-100">{line.substring(2)}</h1>;
+    }
+    if (line.startsWith('- ')) {
+      const content = line.substring(2);
+      const parts = content.split(/(\*\*.*?\*\*)/g);
+      return (
+        <li key={index} className="ml-5 list-disc list-outside mb-1 text-gray-600 dark:text-gray-300">
+          {parts.map((part, i) => {
+            if (part.startsWith('**') && part.endsWith('**')) {
+              return <strong key={i} className="font-semibold text-gray-800 dark:text-gray-100">{part.slice(2, -2)}</strong>;
+            }
+            return part;
+          })}
+        </li>
+      );
+    }
+    return (
+      <p key={index} className="text-gray-700 dark:text-gray-400 leading-relaxed">
+        {line}
+      </p>
+    );
+  });
+
+  return <div className="space-y-2">{elements}</div>;
+};
+
 
 export function CVAnalyzerPage() {
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -100,7 +139,7 @@ export function CVAnalyzerPage() {
               <CardDescription className="dark:text-gray-400">Based on your resume, here are some potential career paths:</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="prose prose-blue dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: recommendations.replace(/\n/g, '<br />') }} />
+              <AnalysisResultDisplay result={recommendations} />
             </CardContent>
           </Card>
         )}
@@ -108,3 +147,4 @@ export function CVAnalyzerPage() {
     </div>
   );
 }
+    

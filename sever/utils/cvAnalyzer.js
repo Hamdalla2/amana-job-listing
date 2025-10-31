@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const pdf = require('pdf-parse');
-const { analyzeResume } = require('../utils/analyzeResume');
+const { analyzeResume } = require('../util/analyzeResume');
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
