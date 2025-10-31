@@ -1,11 +1,13 @@
 import React from 'react';
-import { Briefcase, Bookmark, Moon, Sun } from 'lucide-react';
+import { Briefcase, Bookmark, Moon, Sun, BrainCircuit } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 
+type Page = 'map' | 'details' | 'saved' | 'signin' | 'signup' | 'analyzer';
+
 interface HeaderProps {
-  currentPage: 'map' | 'details' | 'saved';
-  onNavigate: (page: 'map' | 'details' | 'saved') => void;
+  currentPage: Page;
+  onNavigate: (page: Page) => void;
   savedJobsCount: number;
   darkMode: boolean;
   onToggleDarkMode: () => void;
@@ -48,6 +50,14 @@ export function Header({ currentPage, onNavigate, savedJobsCount, darkMode, onTo
                   </Badge>
                 )}
               </Button>
+              <Button
+                variant={currentPage === 'analyzer' ? 'default' : 'ghost'}
+                onClick={() => onNavigate('analyzer')}
+                className="flex items-center gap-2 dark:text-gray-300"
+              >
+                <BrainCircuit className="w-4 h-4" />
+                CV Analyzer
+              </Button>
             </nav>
           </div>
           
@@ -58,7 +68,18 @@ export function Header({ currentPage, onNavigate, savedJobsCount, darkMode, onTo
             className="dark:text-gray-300"
           >
             {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </Button>
+            </Button>
+          
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Button variant="outline" onClick={() => onNavigate('signin')} className="dark:border-gray-600 dark:text-gray-300">
+                Sign In
+              </Button>
+              <Button onClick={() => onNavigate('signup')}>
+                Sign Up
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </header>

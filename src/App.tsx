@@ -4,9 +4,12 @@ import { JobDetailsPage } from './components/JobDetailsPage';
 import { SavedJobsPage } from './components/SavedJobsPage';
 import { Header } from './components/Header';
 import { Job } from './types';
+import { SignInPage } from './SignInPage';
+import { SignUpPage } from './SignUpPage';
+import { CVAnalyzerPage } from './components/CVAnalyzerPage';
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState<'map' | 'details' | 'saved'>('map');
+  const [currentPage, setCurrentPage] = useState<'map' | 'details' | 'saved' | 'signin' | 'signup' | 'analyzer'>('map');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
   const [darkMode, setDarkMode] = useState(false);
@@ -22,8 +25,8 @@ export default function App() {
   };
 
   const handleSaveJob = (jobId: string) => {
-    setSavedJobs(prev => 
-      prev.includes(jobId) 
+    setSavedJobs(prev =>
+      prev.includes(jobId)
         ? prev.filter(id => id !== jobId)
         : [...prev, jobId]
     );
@@ -32,7 +35,7 @@ export default function App() {
   return (
     <div className={darkMode ? 'dark' : ''}>
       <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors">
-        <Header 
+        <Header
           currentPage={currentPage}
           onNavigate={setCurrentPage}
           savedJobsCount={savedJobs.length}
@@ -63,6 +66,18 @@ export default function App() {
             onJobSelect={handleJobSelect}
             onUnsaveJob={handleSaveJob}
           />
+        )}
+
+        {currentPage === 'signin' && (
+          <SignInPage onNavigate={setCurrentPage} />
+        )}
+
+        {currentPage === 'signup' && (
+          <SignUpPage onNavigate={setCurrentPage} />
+        )}
+
+        {currentPage === 'analyzer' && (
+          <CVAnalyzerPage />
         )}
       </div>
     </div>

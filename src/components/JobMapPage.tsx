@@ -43,7 +43,7 @@ export function JobMapPage({
   const [filters, setFilters] = useState<FilterOptions>({
     jobTypes: [],
     salaryRange: [0, 200000],
-    distance: 50,
+    distance: 0, // Show all jobs by default
     searchQuery: "",
   });
 
