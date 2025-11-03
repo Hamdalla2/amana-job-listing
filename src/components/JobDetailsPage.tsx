@@ -21,7 +21,7 @@ export function JobDetailsPage({ job, onBack, isSaved, onSaveJob }: JobDetailsPa
     <div className="min-h-[calc(100vh-73px)] bg-gray-50 dark:bg-gray-900">
       <div className="max-w-5xl mx-auto p-6 space-y-6">
         {/* Back Button */}
-        <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 dark:text-gray-300">
+        <Button variant="ghost" onClick={onBack} className="flex items-center gap-2 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer">
           <ArrowLeft className="w-4 h-4" />
           Back to Jobs
         </Button>
@@ -53,11 +53,11 @@ export function JobDetailsPage({ job, onBack, isSaved, onSaveJob }: JobDetailsPa
                 variant="outline"
                 size="icon"
                 onClick={() => onSaveJob(job.id)}
-                className={isSaved ? 'text-yellow-500 border-yellow-500' : 'dark:border-gray-600 dark:text-gray-300'}
+                className={`${isSaved ? 'text-yellow-500 border-yellow-500' : 'dark:border-gray-600 dark:text-gray-300'} dark:hover:bg-gray-700 cursor-pointer`}
               >
                 <Bookmark className="w-5 h-5" fill={isSaved ? 'currentColor' : 'none'} />
               </Button>
-              <Button onClick={() => setShowApplyModal(true)} size="lg" className="flex items-center gap-2">
+              <Button onClick={() => setShowApplyModal(true)} size="lg" className="flex items-center gap-2 cursor-pointer">
                 <Send className="w-4 h-4" />
                 Apply Now
               </Button>

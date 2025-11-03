@@ -35,7 +35,7 @@ export function JobCard({ job, onClick, isSaved, onSave }: JobCardProps) {
               e.stopPropagation();
               onSave();
             }}
-            className={isSaved ? 'text-yellow-500' : 'text-gray-400'}
+            className={`${isSaved ? 'text-yellow-500' : 'text-gray-400'} dark:hover:bg-gray-700`}
           >
             <Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} />
           </Button>

@@ -1,18 +1,35 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from './components/ui/button';
 import { Input } from './components/ui/input';
 import { Label } from './components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from './components/ui/card';
+import axios from 'axios';
 
 interface AuthPageProps {
   onNavigate: (page: 'signin' | 'signup') => void;
 }
 
 export function SignUpPage({ onNavigate }: AuthPageProps) {
-  const handleSubmit = (e: React.FormEvent) => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('error');
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Later, this will call our backend API
-    console.log('Signing up...');
+    try {
+      const res = await axios.post('http://localhost:5000/auth/signup', { name, email, password });
+      localStorage.setItem('token', res.data.token);
+      setMessageType('success');
+      setMessage('Sign up successful!');
+      setTimeout(() => {
+        window.location.href = '/'; // Redirect to home page
+      }, 1000);
+    } catch (err: any) {
+      setMessageType('error');
+      setMessage(err.response.data.msg);
+    }
   };
 
   return (
@@ -34,6 +51,7 @@ export function SignUpPage({ onNavigate }: AuthPageProps) {
                 placeholder="Jane Doe"
                 required
                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                onChange={(e) => setName(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -44,6 +62,7 @@ export function SignUpPage({ onNavigate }: AuthPageProps) {
                 placeholder="jane.doe@example.com"
                 required
                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                onChange={(e) => setEmail(e.target.value)}
               />
             </div>
             <div className="space-y-2">
@@ -54,16 +73,18 @@ export function SignUpPage({ onNavigate }: AuthPageProps) {
                 placeholder="••••••••"
                 required
                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                onChange={(e) => setPassword(e.target.value)}
               />
             </div>
             <Button type="submit" className="w-full">
               Sign Up
             </Button>
           </form>
+          {message && <p className={`mt-4 text-center text-sm ${messageType === 'success' ? 'text-green-500' : 'text-red-500'}`}>{message}</p>}
         </CardContent>
         <CardFooter className="text-center text-sm text-gray-600 dark:text-gray-400 justify-center">
           <p>
-            Already have an account? <button onClick={() => onNavigate('signin')} className="text-blue-600 hover:underline font-medium">
+            Already have an account? <button onClick={() => onNavigate('signin')} className="text-blue-600 hover:underline font-medium cursor-pointer">
               Sign In
             </button>
           </p>

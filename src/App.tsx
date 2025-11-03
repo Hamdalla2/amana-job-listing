@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { JobMapPage } from './components/JobMapPage';
 import { JobDetailsPage } from './components/JobDetailsPage';
 import { SavedJobsPage } from './components/SavedJobsPage';
@@ -12,7 +12,14 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<'map' | 'details' | 'saved' | 'signin' | 'signup' | 'analyzer'>('map');
   const [selectedJob, setSelectedJob] = useState<Job | null>(null);
   const [savedJobs, setSavedJobs] = useState<string[]>([]);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const savedMode = localStorage.getItem("darkMode");
+    return savedMode ? JSON.parse(savedMode) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("darkMode", JSON.stringify(darkMode));
+  }, [darkMode]);
 
   const handleJobSelect = (job: Job) => {
     setSelectedJob(job);

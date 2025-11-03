@@ -44,7 +44,7 @@ export function FilterSidebar({
           variant="ghost"
           size="sm"
           onClick={handleReset}
-          className="dark:text-gray-300"
+          className="dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
         >
           Reset
         </Button>
@@ -59,6 +59,7 @@ export function FilterSidebar({
               id={type}
               checked={filters.jobTypes.includes(type)}
               onCheckedChange={() => handleJobTypeToggle(type)}
+              className="cursor-pointer"
             />
             <label
               htmlFor={type}

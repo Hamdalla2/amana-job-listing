@@ -1,9 +1,9 @@
-import React from 'react';
-import { Briefcase, Bookmark, Moon, Sun, BrainCircuit } from 'lucide-react';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
+import React, { useState, useEffect } from "react";
+import { Briefcase, Bookmark, Moon, Sun, BrainCircuit } from "lucide-react";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
-type Page = 'map' | 'details' | 'saved' | 'signin' | 'signup' | 'analyzer';
+type Page = "map" | "details" | "saved" | "signin" | "signup" | "analyzer";
 
 interface HeaderProps {
   currentPage: Page;
@@ -13,34 +13,53 @@ interface HeaderProps {
   onToggleDarkMode: () => void;
 }
 
-export function Header({ currentPage, onNavigate, savedJobsCount, darkMode, onToggleDarkMode }: HeaderProps) {
+export function Header({
+  currentPage,
+  onNavigate,
+  savedJobsCount,
+  darkMode,
+  onToggleDarkMode,
+}: HeaderProps) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    window.location.href = '/';
+  };
+
   return (
     <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50 transition-colors">
       <div className="px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-8">
-            <button 
-              onClick={() => onNavigate('map')}
-              className="flex items-center gap-2 group"
+            <button
+              onClick={() => onNavigate("map")}
+              className="flex items-center gap-2 group cursor-pointer"
             >
               <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
                 <Briefcase className="w-6 h-6 text-white" />
               </div>
               <span className="text-gray-900 dark:text-white">JobMap</span>
             </button>
-            
+
             <nav className="flex items-center gap-4">
               <Button
-                variant={currentPage === 'map' ? 'default' : 'ghost'}
-                onClick={() => onNavigate('map')}
-                className="dark:text-gray-300"
+                variant={currentPage === "map" ? "default" : "ghost"}
+                onClick={() => onNavigate("map")}
+                className="dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 Explore Jobs
               </Button>
               <Button
-                variant={currentPage === 'saved' ? 'default' : 'ghost'}
-                onClick={() => onNavigate('saved')}
-                className="flex items-center gap-2 dark:text-gray-300"
+                variant={currentPage === "saved" ? "default" : "ghost"}
+                onClick={() => onNavigate("saved")}
+                className="flex items-center gap-2 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 <Bookmark className="w-4 h-4" />
                 Saved Jobs
@@ -51,33 +70,46 @@ export function Header({ currentPage, onNavigate, savedJobsCount, darkMode, onTo
                 )}
               </Button>
               <Button
-                variant={currentPage === 'analyzer' ? 'default' : 'ghost'}
-                onClick={() => onNavigate('analyzer')}
-                className="flex items-center gap-2 dark:text-gray-300"
+                variant={currentPage === "analyzer" ? "default" : "ghost"}
+                onClick={() => onNavigate("analyzer")}
+                className="flex items-center gap-2 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 <BrainCircuit className="w-4 h-4" />
                 CV Analyzer
               </Button>
             </nav>
           </div>
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggleDarkMode}
-            className="dark:text-gray-300"
-          >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </Button>
-          
+
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={() => onNavigate('signin')} className="dark:border-gray-600 dark:text-gray-300">
-                Sign In
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onToggleDarkMode}
+                className="dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                {darkMode ? (
+                  <Sun className="w-5 h-5" />
+                ) : (
+                  <Moon className="w-5 h-5" />
+                )}
               </Button>
-              <Button onClick={() => onNavigate('signup')}>
-                Sign Up
-              </Button>
+              {isLoggedIn ? (
+                <Button variant="outline" onClick={handleSignOut} className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                  Sign Out
+                </Button>
+              ) : (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => onNavigate("signin")}
+                    className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                  >
+                    Sign In
+                  </Button>
+                  <Button onClick={() => onNavigate("signup")} className="dark:hover:bg-blue-500">Sign Up</Button>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -125,7 +125,7 @@ export function JobMapPage({
             <Button
               variant="outline"
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 dark:border-gray-600 dark:text-gray-300"
+              className="flex items-center gap-2 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
             >
               <SlidersHorizontal className="w-4 h-4" />
               Filters
@@ -136,7 +136,7 @@ export function JobMapPage({
                 variant={viewMode === "map" ? "secondary" : "ghost"}
                 size="sm"
                 onClick={() => setViewMode("map")}
-                className="dark:text-gray-300"
+                className="dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
               >
                 <Map className="w-4 h-4" />
               </Button>
@@ -144,7 +144,7 @@ export function JobMapPage({
                 variant={viewMode === "both" ? "secondary" : "ghost"}
                 size="sm"
                 onClick={() => setViewMode("both")}
-                className="dark:text-gray-300"
+                className="dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
               >
                 Both
               </Button>
@@ -152,7 +152,7 @@ export function JobMapPage({
                 variant={viewMode === "list" ? "secondary" : "ghost"}
                 size="sm"
                 onClick={() => setViewMode("list")}
-                className="dark:text-gray-300"
+                className="dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer"
               >
                 <List className="w-4 h-4" />
               </Button>

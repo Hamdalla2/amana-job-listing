@@ -119,7 +119,7 @@ export function ApplyModal({ job, isOpen, onClose }: ApplyModalProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="resume" className="dark:text-gray-200">Resume / CV *</Label>
-                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-6 text-center hover:border-blue-500 dark:hover:border-blue-400 transition-colors cursor-pointer">
                   <input
                     id="resume"
                     type="file"
@@ -139,10 +139,10 @@ export function ApplyModal({ job, isOpen, onClose }: ApplyModalProps) {
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4">
-                <Button type="button" variant="outline" onClick={onClose} className="dark:border-gray-600 dark:text-gray-300">
+                <Button type="button" variant="outline" onClick={onClose} className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 cursor-pointer">
                   Cancel
                 </Button>
-                <Button type="submit">
+                <Button type="submit" className="cursor-pointer">
                   Submit Application
                 </Button>
               </div>

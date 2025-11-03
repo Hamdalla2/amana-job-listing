@@ -36,11 +36,11 @@ export function JobPopup({ job, onClose, onViewDetails, isSaved, onSave }: JobPo
                 e.stopPropagation();
                 onSave();
               }}
-              className={isSaved ? 'text-yellow-500' : 'text-gray-400'}
+              className={`${isSaved ? 'text-yellow-500' : 'text-gray-400'} dark:hover:bg-gray-700 cursor-pointer`}
             >
               <Bookmark className="w-4 h-4" fill={isSaved ? 'currentColor' : 'none'} />
             </Button>
-            <Button variant="ghost" size="icon" onClick={onClose}>
+            <Button variant="ghost" size="icon" onClick={onClose} className="dark:hover:bg-gray-700 cursor-pointer">
               <X className="w-4 h-4" />
             </Button>
           </div>
@@ -61,7 +61,7 @@ export function JobPopup({ job, onClose, onViewDetails, isSaved, onSave }: JobPo
           {job.description}
         </p>
 
-        <Button onClick={onViewDetails} className="w-full">
+        <Button onClick={onViewDetails} className="w-full cursor-pointer">
           More Details
         </Button>
       </div>
