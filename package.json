@@ -72,9 +72,9 @@
     "vite": "^6.4.1"
   },
   "scripts": {
-    "dev": "concurrently \"vite\" \"nodemon server/index.js\"",
+    "dev": "concurrently -n \"CLIENT,SERVER\" -c \"blue,green\" \"vite\" \"nodemon server/index.js\"",
     "client": "vite",
-    "server": "nodemon sever/index.js",
+    "server": "nodemon server/index.js",
     "build": "vite build",
     "mock": "node scripts/generate-mock.js",
     "tailwind-init": "node node_modules/tailwindcss/lib/cli.js init -p"

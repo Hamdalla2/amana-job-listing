@@ -28,7 +28,13 @@ export function SignUpPage({ onNavigate }: AuthPageProps) {
       }, 1000);
     } catch (err: any) {
       setMessageType('error');
-      setMessage(err.response.data.msg);
+      if (err.response && err.response.data && err.response.data.msg) {
+        setMessage(err.response.data.msg);
+      } else if (err.message) {
+        setMessage(err.message);
+      } else {
+        setMessage('Failed to connect to server. Please make sure the backend is running.');
+      }
     }
   };
 
@@ -50,6 +56,7 @@ export function SignUpPage({ onNavigate }: AuthPageProps) {
                 type="text"
                 placeholder="Jane Doe"
                 required
+                autoComplete="name"
                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 onChange={(e) => setName(e.target.value)}
               />
@@ -61,6 +68,7 @@ export function SignUpPage({ onNavigate }: AuthPageProps) {
                 type="email"
                 placeholder="jane.doe@example.com"
                 required
+                autoComplete="email"
                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -72,6 +80,7 @@ export function SignUpPage({ onNavigate }: AuthPageProps) {
                 type="password"
                 placeholder="••••••••"
                 required
+                autoComplete="new-password"
                 className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 onChange={(e) => setPassword(e.target.value)}
               />
