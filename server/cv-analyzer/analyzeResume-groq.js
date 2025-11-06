@@ -1,18 +1,25 @@
-const axios = require('axios');
+const axios = require("axios");
 
 // Function to call Groq API (Free, Fast, Reliable Alternative)
 async function analyzeCVWithJobs(cvText, jobs, filters = {}) {
-  const apiKey = process.env.GROQ_API_KEY || process.env.GEMINI_API_KEY || "";
-  
+  const apiKey =
+    process.env.VITE_GROQ_API_KEY || process.env.VITE_GEMINI_API_KEY || "";
+
   if (!apiKey) {
-    throw new Error("API key is not configured. Please set GROQ_API_KEY or GEMINI_API_KEY in your .env file.");
+    throw new Error(
+      "API key is not configured. Please set GROQ_API_KEY or GEMINI_API_KEY in your .env file.",
+    );
   }
-  
+
   // Use Groq API - it's free, fast, and reliable
-  const apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-  
+  const apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+
   console.log(`Calling Groq API with model: llama-3.1-70b-versatile`);
-  console.log(`API Key present: ${apiKey ? 'Yes (' + apiKey.substring(0, 10) + '...)' : 'No'}`);
+  console.log(
+    `API Key present: ${
+      apiKey ? "Yes (" + apiKey.substring(0, 10) + "...)" : "No"
+    }`,
+  );
 
   // Construct the system prompt
   const systemPrompt = `You are an AI-powered Career Assistant and CV Analyzer.
@@ -73,16 +80,16 @@ Return ONLY valid JSON without any markdown formatting or code blocks.`;
     messages: [
       {
         role: "system",
-        content: systemPrompt
+        content: systemPrompt,
       },
       {
         role: "user",
-        content: userQuery
-      }
+        content: userQuery,
+      },
     ],
     temperature: 0.2,
     max_tokens: 8192,
-    response_format: { type: "json_object" }
+    response_format: { type: "json_object" },
   };
 
   let response;
@@ -93,42 +100,49 @@ Return ONLY valid JSON without any markdown formatting or code blocks.`;
     try {
       console.log(`Attempt ${retries + 1}/${maxRetries}: Calling Groq API...`);
       response = await axios.post(apiUrl, payload, {
-        headers: { 
-          'Authorization': `Bearer ${apiKey}`,
-          'Content-Type': 'application/json' 
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
         },
-        timeout: 60000 // 60 second timeout
+        timeout: 60000, // 60 second timeout
       });
 
       if (response.status === 200) {
-        console.log('Groq API call successful');
+        console.log("Groq API call successful");
         break; // Success
       }
 
       if (response.status === 429 || response.status >= 500) {
         // Retryable error
         const delay = Math.pow(2, retries) * 1000 + Math.random() * 1000;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         retries++;
       } else {
         // Non-retryable error
-        throw new Error(`API request failed with status ${response.status}: ${JSON.stringify(response.data)}`);
+        throw new Error(
+          `API request failed with status ${response.status}: ${JSON.stringify(
+            response.data,
+          )}`,
+        );
       }
     } catch (err) {
       if (retries >= maxRetries - 1) {
         console.error("API call failed after retries:", err);
-        const errorMessage = err.response?.data?.error?.message || err.message || 'Unknown error';
-        const errorStatus = err.response?.status || 'Unknown';
+        const errorMessage =
+          err.response?.data?.error?.message || err.message || "Unknown error";
+        const errorStatus = err.response?.status || "Unknown";
         console.error("Full error details:", {
           status: errorStatus,
           data: err.response?.data,
-          message: errorMessage
+          message: errorMessage,
         });
-        throw new Error(`Error analyzing CV (Status ${errorStatus}): ${errorMessage}. Please try again later.`);
+        throw new Error(
+          `Error analyzing CV (Status ${errorStatus}): ${errorMessage}. Please try again later.`,
+        );
       }
 
       const delay = Math.pow(2, retries) * 1000 + Math.random() * 1000;
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
       retries++;
     }
   }
@@ -136,35 +150,40 @@ Return ONLY valid JSON without any markdown formatting or code blocks.`;
   // Process the response
   try {
     const choice = response.data.choices?.[0];
-    
+
     if (choice && choice.message?.content) {
       let jsonText = choice.message.content;
-      
+
       // Clean up the response - remove markdown code blocks if present
-      jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      
+      jsonText = jsonText
+        .replace(/```json\n?/g, "")
+        .replace(/```\n?/g, "")
+        .trim();
+
       // If the response starts with {, it's likely JSON
-      if (!jsonText.startsWith('{')) {
+      if (!jsonText.startsWith("{")) {
         // Try to extract JSON from the response
         const jsonMatch = jsonText.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           jsonText = jsonMatch[0];
         }
       }
-      
+
       const parsedData = JSON.parse(jsonText);
 
       // Sort job matches by suitability, highest first
       if (parsedData.jobMatches && Array.isArray(parsedData.jobMatches)) {
         parsedData.jobMatches.sort(
-          (a, b) => b.suitabilityPercentage - a.suitabilityPercentage
+          (a, b) => b.suitabilityPercentage - a.suitabilityPercentage,
         );
       }
 
       return parsedData;
     } else {
       console.error("Invalid API response structure:", response.data);
-      throw new Error("Could not parse the analysis from the AI. The response was empty or malformed.");
+      throw new Error(
+        "Could not parse the analysis from the AI. The response was empty or malformed.",
+      );
     }
   } catch (err) {
     console.error("Error parsing API response:", err, response?.data);
@@ -173,4 +192,3 @@ Return ONLY valid JSON without any markdown formatting or code blocks.`;
 }
 
 module.exports = { analyzeCVWithJobs };
-

@@ -27,7 +27,7 @@ export function SignUpPage({ onNavigate }: AuthPageProps) {
     e.preventDefault();
     try {
       const res = await axios.post(
-        `${process.env.WEBSITE_URI}:5000/auth/signup`,
+        `${import.meta.env.VITE_WEBSITE_URI}:5000/auth/signup`,
         { name, email, password },
       );
       localStorage.setItem("token", res.data.token);

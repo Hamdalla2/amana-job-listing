@@ -24,9 +24,10 @@ export function SignInPage({ onNavigate }: AuthPageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(import.meta.env.VITE_WEBSITE_URI);
     try {
       const res = await axios.post(
-        `${process.env.WEBSITE_URI}:5000/auth/signin`,
+        `${import.meta.env.VITE_WEBSITE_URI}:5000/auth/signin`,
         { email, password },
       );
       localStorage.setItem("token", res.data.token);

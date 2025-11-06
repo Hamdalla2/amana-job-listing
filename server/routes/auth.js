@@ -1,11 +1,10 @@
-
-const router = require('express').Router();
-const User = require('../models/user.model');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const router = require("express").Router();
+const User = require("../models/user.model");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 // Sign Up
-router.route('/signup').post(async (req, res) => {
+router.route("/signup").post(async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
@@ -15,7 +14,9 @@ router.route('/signup').post(async (req, res) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ msg: "User with this email already exists" });
+      return res
+        .status(400)
+        .json({ msg: "User with this email already exists" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -24,29 +25,30 @@ router.route('/signup').post(async (req, res) => {
     const newUser = new User({
       name,
       email,
-      password: hashedPassword
+      password: hashedPassword,
     });
 
     const savedUser = await newUser.save();
 
-    const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: savedUser._id }, process.env.VITE_JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     res.json({
       token,
       user: {
         id: savedUser._id,
         name: savedUser.name,
-        email: savedUser.email
-      }
+        email: savedUser.email,
+      },
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // Sign In
-router.route('/signin').post(async (req, res) => {
+router.route("/signin").post(async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -64,17 +66,18 @@ router.route('/signin').post(async (req, res) => {
       return res.status(400).json({ msg: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, process.env.VITE_JWT_SECRET, {
+      expiresIn: "1h",
+    });
 
     res.json({
       token,
       user: {
         id: user._id,
         name: user.name,
-        email: user.email
-      }
+        email: user.email,
+      },
     });
-
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
