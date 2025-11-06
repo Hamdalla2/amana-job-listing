@@ -4,6 +4,7 @@ const cors = require("cors");
 const path = require("path");
 const authRouter = require("./routes/auth");
 const cvAnalyzerRouter = require("./cv-analyzer/cvAnalyzer");
+const serverRouter = require("./routes/server");
 
 // Load .env file from server directory or root directory
 require("dotenv").config({ path: path.join(__dirname, ".env") });
@@ -37,6 +38,7 @@ if (uri && (uri.startsWith("mongodb://") || uri.startsWith("mongodb+srv://"))) {
 
 app.use("/auth", authRouter);
 app.use("/cv-analyzer", cvAnalyzerRouter);
+app.use("/server", serverRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
