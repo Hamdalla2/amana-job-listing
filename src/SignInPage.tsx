@@ -26,7 +26,7 @@ export function SignInPage({ onNavigate }: AuthPageProps) {
     e.preventDefault();
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_WEBSITE_URI}:5000/auth/signin`,
+        `${import.meta.env.VITE_WEBSITE_URI}/auth/signin`,
         { email, password },
       );
       localStorage.setItem("token", res.data.token);

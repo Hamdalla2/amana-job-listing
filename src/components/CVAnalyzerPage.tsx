@@ -148,7 +148,7 @@ export function CVAnalyzerPage() {
 
     try {
       const response = await axios.post<AnalysisResult>(
-        `${import.meta.env.VITE_WEBSITE_URI}:5000/cv-analyzer/analyze-cv`,
+        `${import.meta.env.VITE_WEBSITE_URI}/cv-analyzer/analyze-cv`,
         formData,
         {
           headers: {
@@ -300,7 +300,9 @@ export function CVAnalyzerPage() {
                   </label>
                   <Select
                     value={filters.type}
-                    onValueChange={(value: string) => handleFilterChange("type", value)}
+                    onValueChange={(value: string) =>
+                      handleFilterChange("type", value)
+                    }
                   >
                     <SelectTrigger className="h-12 dark:bg-gray-700 dark:border-gray-600 dark:text-white text-base">
                       <SelectValue />
