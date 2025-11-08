@@ -321,7 +321,7 @@ export function CVAnalyzerPage() {
                 <Button
                   onClick={handleAnalyze}
                   disabled={isLoading || !cvFile}
-                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full h-12 text-base font-semibold bg-blue-600 text-white hover:bg-blue-500 focus-visible:ring-blue-300 dark:bg-blue-500 dark:text-white dark:hover:bg-blue-400 shadow-lg hover:shadow-xl transition-all duration-300 disabled:bg-blue-300 disabled:text-white disabled:cursor-not-allowed dark:disabled:bg-blue-800/60"
                   size="lg"
                 >
                   {isLoading ? (
