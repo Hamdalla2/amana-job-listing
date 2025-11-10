@@ -72,8 +72,6 @@ export function JobMapPage({
       }
 
       // Salary filter
-      console.log(`Job Location: ${job.location.name}`);
-      console.log(job.salary);
       const salaryMatch = job.salary
         .replace(/[$,]/g, "")
         .match(/\$?(\d[\d,]*)/g);
